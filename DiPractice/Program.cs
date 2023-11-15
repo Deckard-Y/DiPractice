@@ -1,33 +1,41 @@
-﻿using InstrumentsInterface;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DiPractice
 {
-    public static class Program
+    public class Program
     {
-        private static void Main(string[] args)
+        private InstrumentA _instrumentA;
+
+        public Program(InstrumentA instrumentA)
         {
+            _instrumentA = instrumentA;
+        }
+
+        public void Run()
+        {
+            Console.WriteLine("温度: {0}", _instrumentA.MeasureTemperature());
+            Console.WriteLine("湿度: {0}", _instrumentA.MeasureHumidity());
+            Console.WriteLine("電圧: {0}", _instrumentA.MeasureVoltage());
+            Console.WriteLine("振動: {0}", _instrumentA.MeasureVibration());
         }
     }
-}
 
-public class MeasurementControl
-{
-    private IVoltageMeasurable _voltageMeasurable;
-    private ITemperatureMeasurable _temperatureMeasurable;
-
-    public MeasurementControl(IVoltageMeasurable voltageMeasurable, ITemperatureMeasurable temperatureMeasurable)
+    public static class ProgramMain
     {
-        _voltageMeasurable = voltageMeasurable;
-        _temperatureMeasurable = temperatureMeasurable;
-    }
+        public static void Main()
+        {
+            // DIコンテナのセットアップ
+            var services = new ServiceCollection();
+            services.AddTransient<InstrumentA>();
+            services.AddTransient<Program>();
 
-    public double GetVoltageMeasurement()
-    {
-        return _voltageMeasurable.MeasureVoltage();
-    }
+            // コンテナのビルド
+            var serviceProvider = services.BuildServiceProvider();
 
-    public double GetTemperatureMeasurement()
-    {
-        return _temperatureMeasurable.MeasureTemperature();
+            // Programクラスのインスタンスを取得し、Runメソッドを実行
+            var program = serviceProvider.GetService<Program>();
+            program?.Run();
+        }
     }
 }

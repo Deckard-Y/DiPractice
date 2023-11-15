@@ -1,4 +1,4 @@
-using InstrumentsInterface;
+using DiPractice;
 using Moq;
 
 public class MeasurementControlTests
